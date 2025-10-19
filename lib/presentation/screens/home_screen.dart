@@ -24,7 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final userProvider = Provider.of<UserProvider>(context);
 
     if (userProvider.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (userProvider.error != null) {
@@ -43,83 +45,97 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: Colors.black,
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await userProvider.fetchUsers();
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GridView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              final user = users[index];
-              final isLiked = userProvider.isLiked(index);
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await userProvider.fetchUsers();
+          },
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              double width = constraints.maxWidth;
+              int crossAxisCount = 2; 
 
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => ProfileDetailScreen(user: user, index: index),
-                    ),
-                  );
-                },
-                child: Stack(
-                  children: [
-                    Hero(
-                      tag: 'user-image-${user.imageUrl}',
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          image: DecorationImage(
-                            image: NetworkImage(user.imageUrl),
-                            fit: BoxFit.cover,
-                          ),
+              if (width > 1200) {
+                crossAxisCount = 5;
+              } else if (width > 900) {
+                crossAxisCount = 4;
+              } else if (width > 600) {
+                crossAxisCount = 3;
+              }
+
+              return GridView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(8),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: 0.75,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  final isLiked = userProvider.isLiked(index);
+
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              ProfileDetailScreen(user: user, index: index),
                         ),
-                        alignment: Alignment.bottomLeft,
-                        padding: const EdgeInsets.all(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            '${user.firstName}, ${user.age}\n${user.city}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        Hero(
+                          tag: 'user-image-${user.imageUrl}',
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              image: DecorationImage(
+                                image: NetworkImage(user.imageUrl),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            alignment: Alignment.bottomLeft,
+                            padding: const EdgeInsets.all(8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '${user.firstName}, ${user.age}\n${user.city}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: IconButton(
-                        icon: Icon(
-                          isLiked ? Icons.favorite : Icons.favorite_border,
-                          color: Colors.red,
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: IconButton(
+                            icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_border,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              userProvider.toggleLike(index);
+                            },
+                          ),
                         ),
-                        onPressed: () {
-                          userProvider.toggleLike(index);
-                        },
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               );
             },
           ),

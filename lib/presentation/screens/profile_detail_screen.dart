@@ -112,7 +112,7 @@ class ProfileDetailScreen extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     const Text(
-                      'Additional details of the user can go here. What they do how they work their net worth. Bio,hobbies, interests etc. can be added',
+                      'Additional details of the user can go here.Bio,hobbies, interests etc. can be added',
                       style: TextStyle(fontSize: 16),
                     ),
                   ],
