@@ -41,9 +41,9 @@ class ProfileDetailScreen extends StatelessWidget {
           ),
 
           DraggableScrollableSheet(
-            initialChildSize: 0.15, // Initial small height
-            minChildSize: 0.15, // Smallest height
-            maxChildSize: 0.3, // Maximum height when dragged
+            initialChildSize: 0.15, 
+            minChildSize: 0.15, 
+            maxChildSize: 0.3, 
             builder: (context, scrollController) {
               return Container(
                 decoration: const BoxDecoration(

@@ -9,14 +9,14 @@ class UserProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  // Map to track liked status by user identifier
+ 
   final Map<String, bool> _likedUsers = {};
 
   List<UserModel> get users => _users;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  /// Fetch users
+  
   Future<void> fetchUsers() async {
     _isLoading = true;
     _error = null;
@@ -26,7 +26,7 @@ class UserProvider extends ChangeNotifier {
       final result = await _userRepository.getUsers();
       _users = result;
 
-      // Remove likes for users no longer present
+      
       _likedUsers.removeWhere(
           (key, value) => !_users.any((user) => user.imageUrl == key));
     } catch (e) {
@@ -37,15 +37,15 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  /// Toggle like
+  
   void toggleLike(int index) {
     final user = _users[index];
-    final key = user.imageUrl; // unique identifier
+    final key = user.imageUrl;
     _likedUsers[key] = !(_likedUsers[key] ?? false);
     notifyListeners();
   }
 
-  /// Check if liked
+  
   bool isLiked(int index) {
     final user = _users[index];
     final key = user.imageUrl;
